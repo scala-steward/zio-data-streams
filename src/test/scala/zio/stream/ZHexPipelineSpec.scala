@@ -24,7 +24,7 @@ import zio.test.*
 object ZHexPipelineSpec extends ZIOSpecDefault {
 
   def testDecode(s: String, b: Byte): ZIO[Any, HexDecodeException, TestResult] =
-    ZStream.fromIterable(s.getBytes).via(ZHexPipeline.decode).run(ZSink.head).map { v => assertTrue(v.get == b) }
+    ZStream.fromIterable(s.getBytes).via(ZHexPipeline.decode).run(ZSink.head).map(v => assertTrue(v.get == b))
 
   def testEncode(b: Byte, s: String): ZIO[Any, Nothing, TestResult] =
     ZStream(b).via(ZHexPipeline.encode).run(ZSink.collectAll).map { v =>

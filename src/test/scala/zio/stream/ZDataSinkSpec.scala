@@ -29,20 +29,20 @@ object ZDataSinkSpec extends ZIOSpecDefault {
 
   private def streamForDOSOp(f: DataOutputStream => Unit): ZStream[Any, Nothing, Byte] = {
     val bos = new ByteArrayOutputStream
-    val os = new DataOutputStream(bos)
+    val os  = new DataOutputStream(bos)
     f(os)
     os.flush()
     val bytes = bos.toByteArray
-    val oc = Chunk.fromArray(bytes)
+    val oc    = Chunk.fromArray(bytes)
     ZStream.fromChunk(oc)
   }
 
   private def hex(s: String): String = Hex.encodeHexString(s.getBytes(StandardCharsets.UTF_8))
 
   private def checkValueVsDOS[A](
-      expected: A,
-      f: (DataOutputStream, A) => Unit,
-      sink: ZSink[Any, Any, Byte, Byte, A]
+    expected: A,
+    f: (DataOutputStream, A) => Unit,
+    sink: ZSink[Any, Any, Byte, Byte, A]
   ) =
     streamForDOSOp(dos => f(dos, expected))
       .run(sink)
@@ -56,7 +56,7 @@ object ZDataSinkSpec extends ZIOSpecDefault {
       }
 
   private def checkVsDOS[A](gen: Gen[Any, A], f: (DataOutputStream, A) => Unit, sink: ZSink[Any, Any, Byte, Byte, A]) =
-    check(gen) { expected => checkValueVsDOS(expected, f, sink) }
+    check(gen)(expected => checkValueVsDOS(expected, f, sink))
 
   def spec = suite("ZDataSinkSpec")(
     test("readInt works for 1") {
@@ -90,7 +90,7 @@ object ZDataSinkSpec extends ZIOSpecDefault {
       } yield assertTrue(value.isEmpty)
     },
     test("readChunk works for 5 specific Bytes") {
-      val stream = ZStream.fromIterable("0000000500017f80ff".getBytes).via(ZHexPipeline.decode)
+      val stream   = ZStream.fromIterable("0000000500017f80ff".getBytes).via(ZHexPipeline.decode)
       val expected = Chunk[Byte](0.toByte, 1.toByte, 127.toByte, -128.toByte, -1.toByte)
       for {
         value <- stream.run(ZDataSink.readIntLengthChunk)
@@ -105,7 +105,7 @@ object ZDataSinkSpec extends ZIOSpecDefault {
       )
     },
     test("readModifiedUTF8 works for Bytes DataOutputStream produces for \"馊\"") {
-      val stream = ZStream.fromIterable("0003e9a68a".getBytes).via(ZHexPipeline.decode)
+      val stream   = ZStream.fromIterable("0003e9a68a".getBytes).via(ZHexPipeline.decode)
       val expected = "馊"
       for {
         value <- stream.run(ZDataSink.readModifiedUTF8)

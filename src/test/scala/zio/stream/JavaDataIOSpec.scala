@@ -32,8 +32,8 @@ object JavaDataIOSpec extends ZIOSpecDefault {
         dos.writeUTF(expected)
         dos.flush()
         val bytes = bos.toByteArray
-        val dis = new DataInputStream(new ByteArrayInputStream(bytes))
-        val v = dis.readUTF()
+        val dis   = new DataInputStream(new ByteArrayInputStream(bytes))
+        val v     = dis.readUTF()
         assertTrue(v == expected)
       }
     },
@@ -45,8 +45,8 @@ object JavaDataIOSpec extends ZIOSpecDefault {
         dos.writeUTF(expected)
         dos.flush()
         val bytes = bos.toByteArray
-        val dis = new DataInputStream(new ByteArrayInputStream(bytes))
-        val v = dis.readUTF()
+        val dis   = new DataInputStream(new ByteArrayInputStream(bytes))
+        val v     = dis.readUTF()
         assertTrue(v == expected)
       }
     }

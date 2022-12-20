@@ -26,22 +26,22 @@ object ZDataStreamSpec extends ZIOSpecDefault {
 
   def doTest(stream: => ZStream[Any, Nothing, Byte], string: String): ZIO[Any, Nothing, TestResult] = for {
     value <- stream
-      .via(ZHexPipeline.encode)
-      .run(ZSink.collectAll[Byte])
-      .map(bs => new String(bs.toArray))
+               .via(ZHexPipeline.encode)
+               .run(ZSink.collectAll[Byte])
+               .map(bs => new String(bs.toArray))
   } yield assertTrue(value == string)
 
   private def checkVsDIS[A](gen: Gen[Any, A], g: A => ZStream[Any, Throwable, Byte], f: DataInputStream => A) =
     check(gen) { expected =>
       for {
         value <- ZIO.scoped {
-          for {
-            _ <- ZIO.unit
-            stream = g(expected)
-            is <- stream.toInputStream
-            dis = new DataInputStream(is)
-          } yield f(dis)
-        }
+                   for {
+                     _     <- ZIO.unit
+                     stream = g(expected)
+                     is    <- stream.toInputStream
+                     dis    = new DataInputStream(is)
+                   } yield f(dis)
+                 }
       } yield assertTrue(value == expected)
     }
 

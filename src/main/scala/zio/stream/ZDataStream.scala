@@ -21,66 +21,82 @@ import zio.stream.ZStream
 
 import java.io.{EOFException, UTFDataFormatException}
 
-/** Streams to interoperate with JDK's [[java.io.DataInput]] and [[java.io.DataOutput]] format in a way analogous to
-  * JDK's [[java.io.DataOutputStream]].
-  *
-  * Generally, Streams are provided for each method of the [[java.io.DataOutput]] interface, with these exceptions:
-  *
-  *   - `void write(int b)`: Use `ZStream(b.toByte)` instead
-  *   - `void write(byte[] b)`: Use `ZStream.fromChunk(Chunk.fromArray(b))` instead
-  *   - `void write(byte[] b, int off, int len)`: Use `ZStream.fromChunk(Chunk.fromArray(b).drop(off).take(len))`
-  *     instead
-  *
-  * @see
-  *   https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/DataOutput.html
-  */
+/**
+ * Streams to interoperate with JDK's [[java.io.DataInput]] and
+ * [[java.io.DataOutput]] format in a way analogous to JDK's
+ * [[java.io.DataOutputStream]].
+ *
+ * Generally, Streams are provided for each method of the [[java.io.DataOutput]]
+ * interface, with these exceptions:
+ *
+ *   - `void write(int b)`: Use `ZStream(b.toByte)` instead
+ *   - `void write(byte[] b)`: Use `ZStream.fromChunk(Chunk.fromArray(b))`
+ *     instead
+ *   - `void write(byte[] b, int off, int len)`: Use
+ *     `ZStream.fromChunk(Chunk.fromArray(b).drop(off).take(len))` instead
+ *
+ * @see
+ *   https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/DataOutput.html
+ */
 object ZDataStream {
 
   val ZERO: Byte = 0.toByte
-  val ONE: Byte = 1.toByte
+  val ONE: Byte  = 1.toByte
 
   /** Outputs one Byte, either `0x01` if its argument is `true`, else `0x00`. */
   def writeBoolean(v: Boolean): ZStream[Any, Nothing, Byte] =
     if (v) ZStream(ONE) else ZStream(ZERO)
 
-  /** Outputs one Byte for each Char in the String.
-    *
-    * Caution: The number of Bytes being output is not output first, so this is not reversible by [[ZDataSink]] without
-    * another way of knowing how many Bytes need to be read.
-    *
-    * Caution: This loses information. It only writes the low-order Byte of each Char in the String.
-    */
+  /**
+   * Outputs one Byte for each Char in the String.
+   *
+   * Caution: The number of Bytes being output is not output first, so this is
+   * not reversible by [[ZDataSink]] without another way of knowing how many
+   * Bytes need to be read.
+   *
+   * Caution: This loses information. It only writes the low-order Byte of each
+   * Char in the String.
+   */
   def writeBytes(s: String): ZStream[Any, Nothing, Byte] =
     ZStream.fromIterable(s.map(c => (c & 0xff).toByte))
 
-  /** Outputs two Bytes, first the high-order Byte of the Char, then the low-order Byte. */
+  /**
+   * Outputs two Bytes, first the high-order Byte of the Char, then the
+   * low-order Byte.
+   */
   def writeChar(v: Char): ZStream[Any, Nothing, Byte] = {
     val b0 = ((v >>> 8) & 0xff).toByte
     val b1 = ((v >>> 0) & 0xff).toByte
     ZStream(b0, b1)
   }
 
-  /** Outputs two Bytes for each Char in the String.
-    *
-    * Caution: The number of Bytes or Chars being output is not output first, so this is not reversible by [[ZDataSink]]
-    * without another way of knowing how many Chars need to be read.
-    */
+  /**
+   * Outputs two Bytes for each Char in the String.
+   *
+   * Caution: The number of Bytes or Chars being output is not output first, so
+   * this is not reversible by [[ZDataSink]] without another way of knowing how
+   * many Chars need to be read.
+   */
   def writeChars(s: String): ZStream[Any, Nothing, Byte] =
     ZStream.fromIterable(s).flatMap(ZDataStream.writeChar)
 
-  /** Outputs eight Bytes: the Bytes of the Long returned by `java.lang.Double.doubleToLongBits(v)`, in big-endian
-    * order.
-    */
+  /**
+   * Outputs eight Bytes: the Bytes of the Long returned by
+   * `java.lang.Double.doubleToLongBits(v)`, in big-endian order.
+   */
   def writeDouble(v: Double): ZStream[Any, Nothing, Byte] =
     writeLong(java.lang.Double.doubleToLongBits(v))
 
-  /** Outputs four Bytes: the Bytes of the Int returned by `java.lang.Float.floatToIntBits(v)`, in big-endian order.
-    */
+  /**
+   * Outputs four Bytes: the Bytes of the Int returned by
+   * `java.lang.Float.floatToIntBits(v)`, in big-endian order.
+   */
   def writeFloat(v: Float): ZStream[Any, Nothing, Byte] =
     writeInt(java.lang.Float.floatToIntBits(v))
 
-  /** Outputs four Bytes: the Bytes of `v`, in big-endian order.
-    */
+  /**
+   * Outputs four Bytes: the Bytes of `v`, in big-endian order.
+   */
   def writeInt(v: Int): ZStream[Any, Nothing, Byte] = {
     val b0 = ((v >>> 24) & 0xff).toByte
     val b1 = ((v >>> 16) & 0xff).toByte
@@ -89,14 +105,16 @@ object ZDataStream {
     ZStream(b0, b1, b2, b3)
   }
 
-  /** Outputs four Bytes: the Bytes of `v`, in big-endian order, except if v is negative in which case it fails with
-    * NegativeLengthException.
-    */
+  /**
+   * Outputs four Bytes: the Bytes of `v`, in big-endian order, except if v is
+   * negative in which case it fails with NegativeLengthException.
+   */
   def writeIntLength(v: Int): ZStream[Any, NegativeLengthException, Byte] =
     if (v < 0) ZStream.fail(NegativeLengthException(v)) else writeInt(v)
 
-  /** Outputs eight Bytes: the Bytes of `v`, in big-endian order.
-    */
+  /**
+   * Outputs eight Bytes: the Bytes of `v`, in big-endian order.
+   */
   def writeLong(v: Long): ZStream[Any, Nothing, Byte] = {
     val b0 = ((v >>> 56) & 0xff).toByte
     val b1 = ((v >>> 48) & 0xff).toByte
@@ -126,10 +144,10 @@ object ZDataStream {
       val tail = str.substring(slen - 8, slen)
       // handle int overflow with max 3x expansion
       val actualLength = slen.toLong + Integer.toUnsignedLong(utflen - slen)
-      val msg = "encoded string (" + head + "..." + tail + ") too long: " + actualLength + " bytes"
+      val msg          = "encoded string (" + head + "..." + tail + ") too long: " + actualLength + " bytes"
       ZStream.fail(new UTFDataFormatException(msg))
     } else {
-      val cb = ChunkBuilder.make[Byte](utflen + 2) // Two extra for unsigned short length
+      val cb    = ChunkBuilder.make[Byte](utflen + 2) // Two extra for unsigned short length
       var count = 0
       // write two-byte unsigned short length
       cb.addOne(((utflen >>> 8) & 0xff).toByte)
@@ -154,8 +172,9 @@ object ZDataStream {
     }
   }
 
-  /** Outputs two Bytes: the Bytes of `v`, in big-endian order.
-    */
+  /**
+   * Outputs two Bytes: the Bytes of `v`, in big-endian order.
+   */
   def writeShort(v: Short): ZStream[Any, Nothing, Byte] = {
     val b0 = ((v >>> 8) & 0xff).toByte
     val b1 = ((v >>> 0) & 0xff).toByte

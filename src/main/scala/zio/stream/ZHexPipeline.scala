@@ -49,11 +49,14 @@ object ZHexPipeline {
 
   private val INCOMPLETE_BYTE = new EOFException("Incomplete byte at end of input")
 
-  /** Integer value of a hex digit, allowing both upper and lower case for the letters.
-    *
-    * @return
-    *   the digit's value, or -1 if the input Byte is not a valid ASCII hex character
-    */
+  /**
+   * Integer value of a hex digit, allowing both upper and lower case for the
+   * letters.
+   *
+   * @return
+   *   the digit's value, or -1 if the input Byte is not a valid ASCII hex
+   *   character
+   */
   private def digitValue(b: Byte): Int = b match {
     case d if d >= '0' && d <= '9' => d - '0'
     case l if l >= 'a' && l <= 'f' => 10 + l - 'a'
@@ -77,7 +80,7 @@ object ZHexPipeline {
           front
         }
         val temp: ChunkBuilder[Byte] = ChunkBuilder.make[Byte](l / 2)
-        var bad: Option[Byte] = None
+        var bad: Option[Byte]        = None
         for (i <- 0 until bs.size by 2) {
           if (bad.isEmpty) {
             val h = digitValue(bs(i))
