@@ -16,7 +16,6 @@
 
 package zio.stream
 
-import org.apache.commons.codec.binary.Hex
 import zio.*
 import zio.stream.ZSink
 import zio.test.*
@@ -37,7 +36,37 @@ object ZDataSinkSpec extends ZIOSpecDefault {
     ZStream.fromChunk(oc)
   }
 
-  private def hex(s: String): String = Hex.encodeHexString(s.getBytes(StandardCharsets.UTF_8))
+  private val DIGITS = "0123456789abcdef"
+
+  private def hexForBytesOfString(s: String): String = {
+    val bs = s.getBytes(StandardCharsets.UTF_8)
+    val sb = new StringBuilder(bs.size * 2)
+    for (b <- bs) {
+      sb.append(DIGITS((b & 0xf0) >>> 4))
+      sb.append(DIGITS((b & 0x0f) >>> 4))
+    }
+    sb.result
+  }
+
+  private def decodeHexDigit(c: Char): Int = c match {
+    case d if d >= '0' && d <= '9' => d - '0'
+    case l if l >= 'a' && l <= 'f' => l - 'a' + 10
+    case u if u >= 'A' && u <= 'F' => u - 'A' + 10
+    case _ => throw new IllegalArgumentException(s"'$c' is not a hex digit")
+  }
+
+  private def chunkForHex(s: String): Chunk[Byte] = {
+    if (s.size % 2 != 0) {
+      throw new IllegalArgumentException(s"String must be even number of hex digits but is ${s.length} characters long")
+    }
+    val cb = ChunkBuilder.make[Byte](s.length / 2)
+    for (temp <- s.grouped(2)) {
+      cb.addOne((decodeHexDigit(temp(0)) * 16 + decodeHexDigit(temp(1))).toByte)
+    }
+    cb.result
+  }
+
+  private def stringForHex(s: String): String = new String(chunkForHex(s).toArray, StandardCharsets.UTF_8)
 
   private def checkValueVsDOS[A](
     expected: A,
@@ -49,8 +78,8 @@ object ZDataSinkSpec extends ZIOSpecDefault {
       .flatMap { v =>
         if (expected.isInstanceOf[String] && v != expected) {
           println(s"Mismatch for '$expected':")
-          println(s"  Expected Hex: \"${hex(expected.asInstanceOf[String])}\"")
-          println(s"  Output Hex: \"${hex(v.asInstanceOf[String])}\"")
+          println(s"  Expected Hex: \"${hexForBytesOfString(expected.asInstanceOf[String])}\"")
+          println(s"  Output Hex: \"${hexForBytesOfString(v.asInstanceOf[String])}\"")
         }
         assertTrue(v == expected)
       }
@@ -97,7 +126,7 @@ object ZDataSinkSpec extends ZIOSpecDefault {
       } yield assertTrue(value == expected)
     },
     test("readModifiedUTF8 works for Bytes DataOutputStream produces for String from hex Bytes \"e9a68a\"") {
-      val expected = new String(Hex.decodeHex("e9a68a"))
+      val expected = new String(stringForHex("e9a68a"))
       checkValueVsDOS(
         expected,
         (dos, expected) => dos.writeUTF(expected),

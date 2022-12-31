@@ -8,14 +8,27 @@ ThisBuild / organizationName := "Gregor Purdy"
 ThisBuild / startYear        := Some(2022)
 ThisBuild / licenses         := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
 
-lazy val root = (project in file("."))
+lazy val root = project.in(file("."))
+  .aggregate(zdata.js, zdata.jvm)
+  .settings(
+    publish := {},
+    publishLocal := {},
+  )
+
+lazy val zdata = crossProject(JSPlatform, JVMPlatform).in(file("."))
   .settings(
     name := "zdata",
     scalacOptions ++= Seq("-feature", "-deprecation"),
     libraryDependencies ++= Seq(
-      zioStreams      % Compile,
-      zioTest         % Test,
-      zioTestSbt      % Test,
-      "commons-codec" % "commons-codec" % "1.15" % Test
-    )
+      "dev.zio" %%% "zio-streams"  % zioVersion % Compile,
+      "dev.zio" %%% "zio-test"     % zioVersion % Test,
+      "dev.zio" %%% "zio-test-sbt" % zioVersion % Test,
+    ),
+  )
+  .jvmSettings(
+    libraryDependencies ++= Seq(
+    ),
+  )
+  .jsSettings(
+    scalaJSUseMainModuleInitializer := true,
   )
