@@ -225,8 +225,7 @@ object ZDataSink {
     def asciiPrefix(cb: ChunkBuilder[Char], count: Int, length: Int, bytes: Chunk[Byte]): Int =
       if (count < length) {
         val c = (bytes(count) & 0xff)
-        if (c > 127)
-          count
+        if (c > 127) count
         else {
           cb.addOne(c.toChar)
           asciiPrefix(cb, count + 1, length, bytes)
