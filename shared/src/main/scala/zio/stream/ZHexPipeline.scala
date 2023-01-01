@@ -98,7 +98,7 @@ object ZHexPipeline {
           }
         }
         bad match {
-          case None    => ZChannel.write(temp.result)
+          case None    => ZChannel.write(temp.result())
           case Some(e) => ZChannel.fail(InvalidHexChar(e.toChar))
         }
       }
@@ -124,7 +124,7 @@ object ZHexPipeline {
       out += DIGITS((b >>> 4) & 0x0f)
       out += DIGITS((b >>> 0) & 0x0f)
     }
-    out.result
+    out.result()
   }
 
   def encodeChunkOpt(inChunkOpt: Option[Chunk[Byte]]): Chunk[Byte] = inChunkOpt match {

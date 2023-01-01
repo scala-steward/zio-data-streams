@@ -158,7 +158,7 @@ object ZDataSink {
   ): ZSink[Any, E, Byte, Byte, Chunk[A]] = {
     def readNRec(cb: ChunkBuilder[A], n: Int): ZSink[Any, E, Byte, Byte, Chunk[A]] =
       if (n < 1) {
-        ZSink.succeed(cb.result)
+        ZSink.succeed(cb.result())
       } else {
         sinkF().flatMap { v =>
           cb.addOne(v)
@@ -179,7 +179,7 @@ object ZDataSink {
     def readUntilRec(cb: ChunkBuilder[A]): ZSink[Any, E, Byte, Byte, Chunk[A]] =
       sinkF().flatMap { v =>
         if (p(v)) {
-          ZSink.succeed(cb.result)
+          ZSink.succeed(cb.result())
         } else {
           cb.addOne(v)
           readUntilRec(cb)
@@ -298,7 +298,7 @@ object ZDataSink {
         val count = asciiPrefix(cb, 0, length, bytes)
         for {
           _ <- mutf8Suffix(cb, count, length, bytes)
-        } yield new String(cb.result.toArray)
+        } yield new String(cb.result().toArray)
       }
     }
   }

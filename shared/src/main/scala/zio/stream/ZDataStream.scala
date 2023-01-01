@@ -167,7 +167,7 @@ object ZDataStream {
         }
       }
 
-      ZStream.fromChunk(cb.result)
+      ZStream.fromChunk(cb.result())
     }
   }
 
