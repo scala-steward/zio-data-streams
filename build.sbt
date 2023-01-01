@@ -1,7 +1,7 @@
 import Dependencies._
 import sbt.Keys.libraryDependencies
 
-ThisBuild / scalaVersion     := "3.2.1"
+ThisBuild / scalaVersion     := "3.2.1" // "2.13.10" // "2.12.17" // "2.11.12"
 ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.gregorpurdy"
 ThisBuild / organizationName := "Gregor Purdy"
