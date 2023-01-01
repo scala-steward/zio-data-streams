@@ -8,6 +8,8 @@ ThisBuild / organizationName := "Gregor Purdy"
 ThisBuild / startYear        := Some(2022)
 ThisBuild / licenses         := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
 
+ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.6.0"
+
 lazy val root = project
   .in(file("."))
   .aggregate(zdata.js, zdata.jvm)
@@ -20,7 +22,8 @@ lazy val zdata = crossProject(JSPlatform, JVMPlatform)
   .in(file("."))
   .settings(
     name := "zdata",
-    scalacOptions ++= Seq("-feature", "-deprecation"),
+    scalacOptions ++= Seq("-feature", "-deprecation", "-Ywarn-unused"),
+    semanticdbEnabled := true,
     libraryDependencies ++= Seq(
       "dev.zio" %%% "zio-streams"  % zioVersion % Compile,
       "dev.zio" %%% "zio-test"     % zioVersion % Test,
@@ -28,9 +31,11 @@ lazy val zdata = crossProject(JSPlatform, JVMPlatform)
     )
   )
   .jvmSettings(
+    scalafixScalaBinaryVersion := "2.13",
     libraryDependencies ++= Seq(
     )
   )
   .jsSettings(
+    scalafixScalaBinaryVersion      := "2.13",
     scalaJSUseMainModuleInitializer := true
   )
