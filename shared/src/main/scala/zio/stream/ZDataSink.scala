@@ -16,10 +16,11 @@
 
 package zio.stream
 
-import zio.{Chunk, ChunkBuilder, ZIO}
-
 import java.io.{EOFException, UTFDataFormatException}
+
 import scala.annotation.tailrec
+
+import zio.{Chunk, ChunkBuilder, ZIO}
 
 /**
  * Sinks to interoperate with JDK's [[java.io.DataInput]] and

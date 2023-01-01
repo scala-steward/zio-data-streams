@@ -16,10 +16,9 @@
 
 package zio.stream
 
-import zio.ChunkBuilder
-import zio.stream.ZStream
-
 import java.io.{EOFException, UTFDataFormatException}
+
+import zio.ChunkBuilder
 
 /**
  * Streams to interoperate with JDK's [[java.io.DataInput]] and

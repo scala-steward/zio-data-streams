@@ -16,10 +16,9 @@
 
 package zio.stream
 
-import zio.*
-import zio.stream.*
-
 import java.io.EOFException
+
+import zio._
 
 object ZHexPipeline {
 
