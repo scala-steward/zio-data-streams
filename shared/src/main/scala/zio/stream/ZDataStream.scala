@@ -146,8 +146,7 @@ object ZDataStream {
       val msg          = "encoded string (" + head + "..." + tail + ") too long: " + actualLength + " bytes"
       ZStream.fail(new UTFDataFormatException(msg))
     } else {
-      val cb    = ChunkBuilder.make[Byte](utflen + 2) // Two extra for unsigned short length
-      var count = 0
+      val cb = ChunkBuilder.make[Byte](utflen + 2) // Two extra for unsigned short length
       // write two-byte unsigned short length
       cb.addOne(((utflen >>> 8) & 0xff).toByte)
       cb.addOne(((utflen >>> 0) & 0xff).toByte)
