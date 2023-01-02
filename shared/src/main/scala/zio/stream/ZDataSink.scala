@@ -246,7 +246,6 @@ object ZDataSink {
         val c = (bytes(count) & 0xff)
         (c >> 4) match {
           case n if n < 8 => { /* 0xxxxxxx: ASCII */
-            val newChar = c.toChar
             cb.addOne(c.toChar)
             mutf8Suffix(cb, count + 1, length, bytes)
           }
