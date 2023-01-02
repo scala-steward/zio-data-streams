@@ -160,7 +160,7 @@ object ZDataStream {
             cb.addOne((0x80 | ((c >> 6) & 0x3f)).toByte)
             cb.addOne((0x80 | ((c >> 0) & 0x3f)).toByte)
           }
-          case bb => { // Zero is written as two non-zero Bytes
+          case bb @ _ => { // Zero is written as two non-zero Bytes
             cb.addOne((0xc0 | ((c >> 6) & 0x1f)).toByte)
             cb.addOne((0x80 | ((c >> 0) & 0x3f)).toByte)
           }
