@@ -1,7 +1,13 @@
 import Dependencies._
 import sbt.Keys.libraryDependencies
 
-ThisBuild / scalaVersion     := "3.2.1" // "2.13.10" // "2.12.17" // "2.11.12"
+lazy val scala3                 = "3.2.1"
+lazy val scala213               = "2.13.10"
+lazy val scala212               = "2.12.17"
+lazy val scala211               = "2.11.12"
+lazy val supportedScalaVersions = List(scala3)
+
+ThisBuild / scalaVersion     := scala3
 ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.gregorpurdy"
 ThisBuild / organizationName := "Gregor Purdy"
@@ -14,8 +20,9 @@ lazy val root = project
   .in(file("."))
   .aggregate(zdata.js, zdata.jvm)
   .settings(
-    publish      := {},
-    publishLocal := {}
+    crossScalaVersions := Nil,
+    publish            := {},
+    publishLocal       := {}
   )
 
 lazy val zdata = crossProject(JSPlatform, JVMPlatform)
@@ -31,6 +38,7 @@ lazy val zdata = crossProject(JSPlatform, JVMPlatform)
     )
   )
   .jvmSettings(
+    crossScalaVersions         := supportedScalaVersions,
     scalafixScalaBinaryVersion := "2.13",
     libraryDependencies ++= Seq(
     )

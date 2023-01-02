@@ -44,7 +44,7 @@ object ZHexPipeline {
     'f'.toByte
   )
 
-  type HexDecodeException = EOFException | InvalidHexChar
+  type HexDecodeException = ZHexPipelineVersionSpecific.HexDecodeException
 
   private val INCOMPLETE_BYTE = new EOFException("Incomplete byte at end of input")
 
