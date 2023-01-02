@@ -18,6 +18,8 @@ package zio.stream
 
 import java.io.EOFException
 
+import scala.annotation.unused
+
 import zio._
 
 object ZHexPipeline {
@@ -105,7 +107,7 @@ object ZHexPipeline {
     }
     def err(z: Nothing): ZChannel[Any, Nothing, Chunk[Byte], Any, HexDecodeException, Chunk[Byte], Unit] =
       throw new UnsupportedOperationException("Input stream should be infallible")
-    def done(u: Any): ZChannel[Any, Nothing, Chunk[Byte], Any, HexDecodeException, Chunk[Byte], Unit] = if (
+    def done(@unused u: Any): ZChannel[Any, Nothing, Chunk[Byte], Any, HexDecodeException, Chunk[Byte], Unit] = if (
       spare.isEmpty
     ) {
       ZChannel.succeed(())
