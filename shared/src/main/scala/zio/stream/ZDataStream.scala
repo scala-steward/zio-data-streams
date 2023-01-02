@@ -16,7 +16,7 @@
 
 package zio.stream
 
-import java.io.{EOFException, UTFDataFormatException}
+import java.io.UTFDataFormatException
 
 import zio.ChunkBuilder
 
