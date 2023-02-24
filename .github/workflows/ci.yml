@@ -28,7 +28,7 @@ jobs:
     - name: Cache scala dependencies
       uses: coursier/cache-action@v6
     - name: Lint code
-      run: ./sbt check
+      run: sbt check
 
   compile:
     runs-on: ubuntu-20.04
@@ -51,7 +51,7 @@ jobs:
         uses: coursier/cache-action@v6
       - name: Test/compile 3
         if: ${{ startsWith(matrix.scala, '3.') }}
-        run: free --si -tmws 10 & ./sbt ++${{ matrix.scala }} Test/compile
+        run: free --si -tmws 10 & sbt ++${{ matrix.scala }} Test/compile
 
   test:
     runs-on: ubuntu-20.04
@@ -76,7 +76,7 @@ jobs:
       uses: coursier/cache-action@v6
     - name: Test 3
       if: ${{ startsWith(matrix.scala, '3.') }}
-      run: ./sbt ++${{ matrix.scala }}! test${{ matrix.platform }}3
+      run: sbt ++${{ matrix.scala }}! test${{ matrix.platform }}3
     - name: Upload Test Results 3
       if: ${{ startsWith(matrix.scala, '3.') }}
       uses: actions/upload-artifact@v3
@@ -111,7 +111,7 @@ jobs:
       - name: Cache scala dependencies
         uses: coursier/cache-action@v6
       - name: Test on different Scala target platforms
-        run: free --si -tmws 10 & ./sbt test${{ matrix.platform }}
+        run: free --si -tmws 10 & sbt test${{ matrix.platform }}
 
   ci:
     runs-on: ubuntu-20.04
