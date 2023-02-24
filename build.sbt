@@ -21,6 +21,10 @@ addCommandAlias(
   "; scalafmtSbtCheck; scalafmtCheckAll"
 )
 addCommandAlias(
+  "testJVM3",
+  ";test"
+)
+addCommandAlias(
   "testJS",
   ";test"
 )
