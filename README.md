@@ -1,6 +1,8 @@
 # zdata
 ZIO Streams integration with JDK DataInput and DataOutput format
 
+![CI][Badge-CI]
+
 Open Questions:
 
   * Should EOFException be exposed to users, or not? NegativeLengthException?
@@ -16,3 +18,5 @@ TODO:
 ### Legal
 
 Copyright 2022 Gregor Purdy. All rights reserved.
+
+[Badge-CI]: https://github.com/gnp/zdata/workflows/CI/badge.svg
