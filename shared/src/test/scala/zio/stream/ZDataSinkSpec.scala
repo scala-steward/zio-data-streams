@@ -52,7 +52,7 @@ object ZDataSinkSpec extends ZIOSpecDefault {
     case d if d >= '0' && d <= '9' => d - '0'
     case l if l >= 'a' && l <= 'f' => l - 'a' + 10
     case u if u >= 'A' && u <= 'F' => u - 'A' + 10
-    case _ => throw new IllegalArgumentException(s"'$c' is not a hex digit")
+    case _                         => throw new IllegalArgumentException(s"'$c' is not a hex digit")
   }
 
   private def chunkForHex(s: String): Chunk[Byte] = {
