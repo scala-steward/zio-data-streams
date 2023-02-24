@@ -77,18 +77,6 @@ jobs:
     - name: Test 3
       if: ${{ startsWith(matrix.scala, '3.') }}
       run: sbt ++${{ matrix.scala }}! test${{ matrix.platform }}3
-    - name: Upload Test Results 3
-      if: ${{ startsWith(matrix.scala, '3.') }}
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-output-3
-        path: ./**/test-reports/output.json
-    - name: Report Test Death 3.x
-      if: ${{ failure() &&  startsWith(matrix.scala, '3.') }}
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-debug-3.x
-        path: ./**/test-reports/**_debug.txt
 
   testPlatforms:
     runs-on: ubuntu-20.04
