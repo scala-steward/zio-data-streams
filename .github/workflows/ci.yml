@@ -51,7 +51,7 @@ jobs:
         if: ${{ startsWith(matrix.scala, '3.') }}
         run: free --si -tmws 10 & ./sbt ++${{ matrix.scala }} Test/compile
 
-test:
+  test:
     runs-on: ubuntu-20.04
     timeout-minutes: 60
     strategy:
@@ -87,7 +87,7 @@ test:
         name: test-debug-3.x
         path: ./**/test-reports/**_debug.txt
 
-testPlatforms:
+  testPlatforms:
     runs-on: ubuntu-20.04
     timeout-minutes: 60
     strategy:
@@ -109,7 +109,7 @@ testPlatforms:
       - name: Test on different Scala target platforms
         run: free --si -tmws 10 & ./sbt test${{ matrix.platform }}
 
-ci:
+  ci:
     runs-on: ubuntu-20.04
     needs: [lint, compile, test, testPlatforms]
     steps:
