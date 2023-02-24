@@ -20,6 +20,10 @@ addCommandAlias(
   "check",
   "; scalafmtSbtCheck; scalafmtCheckAll"
 )
+addCommandAlias(
+  "testJS",
+  ";test"
+)
 
 lazy val root = project
   .in(file("."))
