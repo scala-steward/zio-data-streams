@@ -8,5 +8,7 @@
 /project/project/
 /project/target/
 /target/
-/js/target/
-/jvm/target/
+/scalafix/rules/target/
+/streams/js/target/
+/streams/jvm/target/
+/streams/native/target/
