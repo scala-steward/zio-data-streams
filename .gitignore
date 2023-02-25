@@ -12,3 +12,6 @@
 /streams/js/target/
 /streams/jvm/target/
 /streams/native/target/
+/streams-tests/js/target/
+/streams-tests/jvm/target/
+/streams-tests/native/target/
