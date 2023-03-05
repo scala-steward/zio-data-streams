@@ -18,7 +18,6 @@ package zio.stream
 
 import zio.*
 import zio.stream.*
-import zio.stream.ZHexPipeline.HexDecodeException
 import zio.test.*
 
 object ZHexPipelineSpec extends ZIOSpecDefault {

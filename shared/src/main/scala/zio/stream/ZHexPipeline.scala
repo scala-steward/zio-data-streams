@@ -44,10 +44,6 @@ object ZHexPipeline {
     'f'.toByte
   )
 
-  type HexDecodeException = ZHexPipelineVersionSpecific.HexDecodeException
-
-  private val INCOMPLETE_BYTE = new EOFException("Incomplete byte at end of input")
-
   /**
    * Integer value of a hex digit, allowing both upper and lower case for the
    * letters.
@@ -99,7 +95,7 @@ object ZHexPipeline {
         }
         bad match {
           case None    => ZChannel.write(temp.result())
-          case Some(e) => ZChannel.fail(InvalidHexChar(e.toChar))
+          case Some(e) => ZChannel.fail(HexDecodeException.InvalidHexCharException(e.toChar))
         }
       }
     }
@@ -110,7 +106,7 @@ object ZHexPipeline {
     ) {
       ZChannel.succeed(())
     } else {
-      ZChannel.fail(INCOMPLETE_BYTE)
+      ZChannel.fail(HexDecodeException.IncompleteByteException)
     }
 
     ZChannel.readWith(in, err, done)
