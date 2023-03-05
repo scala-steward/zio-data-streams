@@ -45,7 +45,7 @@ object ZDataSinkSpec extends ZIOSpecDefault {
       sb.append(DIGITS((b & 0xf0) >>> 4))
       sb.append(DIGITS((b & 0x0f) >>> 4))
     }
-    sb.result
+    sb.result()
   }
 
   private def decodeHexDigit(c: Char): Int = c match {
@@ -63,7 +63,7 @@ object ZDataSinkSpec extends ZIOSpecDefault {
     for (temp <- s.grouped(2)) {
       cb.addOne((decodeHexDigit(temp(0)) * 16 + decodeHexDigit(temp(1))).toByte)
     }
-    cb.result
+    cb.result()
   }
 
   private def stringForHex(s: String): String = new String(chunkForHex(s).toArray, StandardCharsets.UTF_8)
