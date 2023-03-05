@@ -45,10 +45,12 @@ lazy val zdata = crossProject(JSPlatform, JVMPlatform)
     scalacOptions ++= Seq("-feature", "-deprecation", "-Ywarn-unused"),
     semanticdbEnabled := true,
     libraryDependencies ++= Seq(
-      "dev.zio" %%% "zio-streams"  % zioVersion % Compile,
-      "dev.zio" %%% "zio-test"     % zioVersion % Test,
-      "dev.zio" %%% "zio-test-sbt" % zioVersion % Test
-    )
+      "dev.zio" %%% "zio-streams"       % zioVersion % Compile,
+      "dev.zio" %%% "zio-test"          % zioVersion % Test,
+      "dev.zio" %%% "zio-test-sbt"      % zioVersion % Test,
+      "dev.zio" %%% "zio-test-magnolia" % zioVersion % Test
+    ),
+    testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
   )
   .jvmSettings(
     crossScalaVersions         := supportedScalaVersions,
