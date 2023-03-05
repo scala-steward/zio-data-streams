@@ -16,8 +16,6 @@
 
 package zio.stream
 
-import java.io.EOFException
-
 import scala.annotation.unused
 
 import zio._
