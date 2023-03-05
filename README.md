@@ -1,4 +1,5 @@
-# zdata
+# ZIO Data Streams
+
 ZIO Streams integration with JDK DataInput and DataOutput format
 
 ![CI][Badge-CI]

@@ -31,17 +31,17 @@ addCommandAlias(
 
 lazy val root = project
   .in(file("."))
-  .aggregate(zdata.js, zdata.jvm)
+  .aggregate(zioDataStreams.js, zioDataStreams.jvm)
   .settings(
     crossScalaVersions := Nil,
     publish            := {},
     publishLocal       := {}
   )
 
-lazy val zdata = crossProject(JSPlatform, JVMPlatform)
+lazy val zioDataStreams = crossProject(JSPlatform, JVMPlatform)
   .in(file("."))
   .settings(
-    name := "zdata",
+    name := "zio-data-streams",
     scalacOptions ++= Seq("-feature", "-deprecation", "-Ywarn-unused"),
     semanticdbEnabled := true,
     libraryDependencies ++= Seq(
