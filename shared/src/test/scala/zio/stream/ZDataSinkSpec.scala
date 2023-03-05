@@ -16,12 +16,12 @@
 
 package zio.stream
 
-import zio.*
+import zio._
 import zio.stream.ZSink
-import zio.test.*
-import zio.test.Assertion.*
+import zio.test._
+import zio.test.Assertion._
 
-import java.io.*
+import java.io._
 import java.nio.charset.StandardCharsets
 
 object ZDataSinkSpec extends ZIOSpecDefault {

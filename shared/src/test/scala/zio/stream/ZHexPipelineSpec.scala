@@ -16,9 +16,9 @@
 
 package zio.stream
 
-import zio.*
-import zio.stream.*
-import zio.test.*
+import zio._
+import zio.stream._
+import zio.test._
 
 object ZHexPipelineSpec extends ZIOSpecDefault {
 

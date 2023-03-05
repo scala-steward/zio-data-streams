@@ -16,9 +16,8 @@
 
 package zio.stream
 
-import zio.*
-import zio.test.*
-import zio.test.Assertion.*
+import zio._
+import zio.test._
 
 import java.io.DataInputStream
 

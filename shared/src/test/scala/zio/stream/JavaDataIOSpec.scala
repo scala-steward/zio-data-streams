@@ -16,8 +16,7 @@
 
 package zio.stream
 
-import zio.test.*
-import zio.test.Assertion.*
+import zio.test._
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, DataInputStream, DataOutputStream}
 
