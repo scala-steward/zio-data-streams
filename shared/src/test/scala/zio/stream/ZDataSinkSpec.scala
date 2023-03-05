@@ -127,7 +127,7 @@ object ZDataSinkSpec extends ZIOSpecDefault {
     },
     test("readModifiedUTF8 works for Bytes DataOutputStream produces for String from hex Bytes \"e9a68a\"") {
       val expected = new String(stringForHex("e9a68a"))
-      checkValueVsDOS(
+      checkValueVsDOS[String](
         expected,
         (dos, expected) => dos.writeUTF(expected),
         ZDataSink.readModifiedUTF8
@@ -142,38 +142,38 @@ object ZDataSinkSpec extends ZIOSpecDefault {
     },
     test("readModifiedUTF8 works for Bytes DataOutputStream produces for \"ܘ馊\"") {
       val expected = "ܘ馊"
-      checkValueVsDOS(
+      checkValueVsDOS[String](
         expected,
         (dos, expected) => dos.writeUTF(expected),
         ZDataSink.readModifiedUTF8
       )
     },
     test("Property test readBoolean") {
-      checkVsDOS(Gen.boolean, (dos, expected) => dos.writeBoolean(expected), ZDataSink.readBoolean)
+      checkVsDOS[Boolean](Gen.boolean, (dos, expected) => dos.writeBoolean(expected), ZDataSink.readBoolean)
     },
     test("Property test readByte") {
-      checkVsDOS(Gen.byte, (dos, expected) => dos.writeByte(expected), ZDataSink.readByte)
+      checkVsDOS[Byte](Gen.byte, (dos, expected) => dos.writeByte(expected), ZDataSink.readByte)
     },
     test("Property test readChar") {
-      checkVsDOS(Gen.char, (dos, expected) => dos.writeChar(expected), ZDataSink.readChar)
+      checkVsDOS[Char](Gen.char, (dos, expected) => dos.writeChar(expected), ZDataSink.readChar)
     },
     test("Property test readDouble") {
-      checkVsDOS(Gen.double, (dos, expected) => dos.writeDouble(expected), ZDataSink.readDouble)
+      checkVsDOS[Double](Gen.double, (dos, expected) => dos.writeDouble(expected), ZDataSink.readDouble)
     },
     test("Property test readFloat") {
-      checkVsDOS(Gen.float, (dos, expected) => dos.writeFloat(expected), ZDataSink.readFloat)
+      checkVsDOS[Float](Gen.float, (dos, expected) => dos.writeFloat(expected), ZDataSink.readFloat)
     },
     test("Property test readInt") {
-      checkVsDOS(Gen.int, (dos, expected) => dos.writeInt(expected), ZDataSink.readInt)
+      checkVsDOS[Int](Gen.int, (dos, expected) => dos.writeInt(expected), ZDataSink.readInt)
     },
     test("Property test readLong") {
-      checkVsDOS(Gen.long, (dos, expected) => dos.writeLong(expected), ZDataSink.readLong)
+      checkVsDOS[Long](Gen.long, (dos, expected) => dos.writeLong(expected), ZDataSink.readLong)
     },
     test("Property test readShort") {
-      checkVsDOS(Gen.short, (dos, expected) => dos.writeShort(expected), ZDataSink.readShort)
+      checkVsDOS[Short](Gen.short, (dos, expected) => dos.writeShort(expected), ZDataSink.readShort)
     },
     test("Property test readModifiedUTF8 (1 char)") {
-      checkVsDOS(
+      checkVsDOS[String](
         Gen.stringBounded(0, 1)(Gen.unicodeChar),
         (dos, expected) => {
           dos.writeUTF(expected)
@@ -182,7 +182,7 @@ object ZDataSinkSpec extends ZIOSpecDefault {
       )
     },
     test("Property test readModifiedUTF8 (multiple chars)") {
-      checkVsDOS(
+      checkVsDOS[String](
         Gen.stringBounded(0, 100)(Gen.unicodeChar),
         (dos, expected) => {
           dos.writeUTF(expected)

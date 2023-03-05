@@ -107,7 +107,11 @@ object ZHexPipeline {
       ZChannel.fail(HexDecodeException.IncompleteByteException)
     }
 
-    ZChannel.readWith(in, err, done)
+    ZChannel.readWith[Any, Nothing, zio.Chunk[Byte], Any, zio.stream.HexDecodeException, zio.Chunk[Byte], Unit](
+      in,
+      err,
+      done
+    )
   }
 
   def decode: ZPipeline[Any, HexDecodeException, Byte, Byte] = ZPipeline.fromChannel(decodeChannel)
