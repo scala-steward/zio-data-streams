@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package zio.stream
+package com.gregorpurdy.ziodatastream
 
 /**
  * Error type used by [[ZDataSink.readIntLength]] and

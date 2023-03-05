@@ -1,4 +1,4 @@
-package zio.stream
+package com.gregorpurdy.ziodatastream
 
 sealed trait HexDecodeException extends Exception
 

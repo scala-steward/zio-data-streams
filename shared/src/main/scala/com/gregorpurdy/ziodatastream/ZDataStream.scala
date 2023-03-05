@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package zio.stream
-
-import java.io.UTFDataFormatException
+package com.gregorpurdy.ziodatastream
 
 import zio.ChunkBuilder
+import zio.stream.ZStream
+
+import java.io.UTFDataFormatException
 
 /**
  * Streams to interoperate with JDK's [[java.io.DataInput]] and

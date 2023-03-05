@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package zio.stream
+package com.gregorpurdy.ziodatastream
 
 import zio._
 import zio.stream._

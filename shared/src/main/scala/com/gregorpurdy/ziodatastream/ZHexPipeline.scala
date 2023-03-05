@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package zio.stream
+package com.gregorpurdy.ziodatastream
+
+import zio.stream.{ZChannel, ZPipeline}
+import zio.{Chunk, ChunkBuilder, ZIO}
 
 import scala.annotation.unused
-
-import zio._
 
 object ZHexPipeline {
 
@@ -107,7 +108,7 @@ object ZHexPipeline {
       ZChannel.fail(HexDecodeException.IncompleteByteException)
     }
 
-    ZChannel.readWith[Any, Nothing, zio.Chunk[Byte], Any, zio.stream.HexDecodeException, zio.Chunk[Byte], Unit](
+    ZChannel.readWith[Any, Nothing, zio.Chunk[Byte], Any, HexDecodeException, zio.Chunk[Byte], Unit](
       in,
       err,
       done

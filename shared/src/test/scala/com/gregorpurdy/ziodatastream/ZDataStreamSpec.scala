@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package zio.stream
+package com.gregorpurdy.ziodatastream
 
 import zio._
+import zio.stream.{ZSink, ZStream}
 import zio.test._
 
 import java.io.DataInputStream
