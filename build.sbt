@@ -8,7 +8,7 @@ lazy val scala211               = "2.11.12"
 lazy val supportedScalaVersions = List(scala3)
 
 ThisBuild / scalaVersion         := scala3
-ThisBuild / version              := "0.1.0"
+ThisBuild / version              := "0.1.1-SNAPSHOT"
 ThisBuild / versionScheme        := Some("early-semver")
 ThisBuild / organization         := "com.gregorpurdy"
 ThisBuild / organizationName     := "Gregor Purdy"
