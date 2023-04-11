@@ -26,7 +26,7 @@ object ZDataStreamSpec extends ZIOSpecDefault {
 
   def doTest(stream: => ZStream[Any, Nothing, Byte], string: String): ZIO[Any, Nothing, TestResult] = for {
     value <- stream
-               .via(ZHexPipeline.encode)
+               .via(ZHexPipeline.hexEncode)
                .run(ZSink.collectAll[Byte])
                .map(bs => new String(bs.toArray))
   } yield assertTrue(value == string)

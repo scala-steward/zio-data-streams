@@ -23,118 +23,115 @@ import scala.annotation.unused
 
 object ZHexPipeline {
 
-  /** ASCII characters for hex digits */
-  val DIGITS: Array[Byte] = Array(
-    '0'.toByte,
-    '1'.toByte,
-    '2'.toByte,
-    '3'.toByte,
-    '4'.toByte,
-    '5'.toByte,
-    '6'.toByte,
-    '7'.toByte,
-    '8'.toByte,
-    '9'.toByte,
-    'a'.toByte,
-    'b'.toByte,
-    'c'.toByte,
-    'd'.toByte,
-    'e'.toByte,
-    'f'.toByte
-  )
-
   /**
-   * Integer value of a hex digit, allowing both upper and lower case for the
-   * letters.
-   *
-   * @return
-   *   the digit's value, or -1 if the input Byte is not a valid ASCII hex
-   *   character
+   * Decode each pair of hex digit input bytes (both lower or upper case letters
+   * are allowed) as one output byte.
    */
-  private def digitValue(b: Byte): Int = b match {
-    case d if d >= '0' && d <= '9' => d - '0'
-    case l if l >= 'a' && l <= 'f' => 10 + l - 'a'
-    case u if u >= 'A' && u <= 'F' => 10 + u - 'A'
-    case _                         => -1
-  }
-
-  def decodeChannel: ZChannel[Any, Nothing, Chunk[Byte], Any, HexDecodeException, Chunk[Byte], Unit] = {
-    var spare: Chunk[Byte] = Chunk.empty[Byte]
-    def in(in: Chunk[Byte]): ZChannel[Any, Nothing, Chunk[Byte], Any, HexDecodeException, Chunk[Byte], Unit] = {
-      val toProcess = spare ++ in
-      if (toProcess.isEmpty) {
-        ZChannel.unit
-      } else {
-        val l = toProcess.size
-        val bs = if (l % 2 == 0) {
-          toProcess
+  def hexDecode: ZPipeline[Any, EncodingException, Byte, Byte] = {
+    def digitValue(b: Byte): Int = b match {
+      case d if d >= '0' && d <= '9' => d - '0'
+      case l if l >= 'a' && l <= 'f' => 10 + l - 'a'
+      case u if u >= 'A' && u <= 'F' => 10 + u - 'A'
+      case _                         => -1
+    }
+    def decodeChannel(
+      spare: Chunk[Byte]
+    ): ZChannel[Any, Nothing, Chunk[Byte], Any, EncodingException, Chunk[Byte], Unit] = {
+      def in(in: Chunk[Byte]): ZChannel[Any, Nothing, Chunk[Byte], Any, EncodingException, Chunk[Byte], Unit] = {
+        val toProcess = spare ++ in
+        if (toProcess.isEmpty) {
+          ZChannel.unit
         } else {
-          val (front, tail) = toProcess.splitAt(l - 1)
-          spare = tail
-          front
-        }
-        val temp: ChunkBuilder[Byte] = ChunkBuilder.make[Byte](l / 2)
-        var bad: Option[Byte]        = None
-        for (i <- 0 until bs.size by 2) {
-          if (bad.isEmpty) {
-            val h = digitValue(bs(i))
-            if (h < 0) {
-              bad = Some(bs(i))
-            } else {
-              val l = digitValue(bs(i + 1))
-              if (l < 0) {
-                bad = Some(bs(i + 1))
+          val l = toProcess.size
+          val (bs, newSpare) = if (l % 2 == 0) {
+            (toProcess, Chunk.empty[Byte])
+          } else {
+            toProcess.splitAt(l - 1)
+          }
+          val temp: ChunkBuilder[Byte] = ChunkBuilder.make[Byte](l / 2)
+          var bad: Option[Byte]        = None
+          for (i <- 0 until bs.size by 2) {
+            if (bad.isEmpty) {
+              val h = digitValue(bs(i))
+              if (h < 0) {
+                bad = Some(bs(i))
               } else {
-                val v = (h << 4) | l
-                val b = v.toByte
-                temp += b
+                val l = digitValue(bs(i + 1))
+                if (l < 0) {
+                  bad = Some(bs(i + 1))
+                } else {
+                  val v = (h << 4) | l
+                  val b = v.toByte
+                  temp += b
+                }
               }
             }
           }
-        }
-        bad match {
-          case None    => ZChannel.write(temp.result())
-          case Some(e) => ZChannel.fail(HexDecodeException.InvalidHexCharException(e.toChar))
+          bad match {
+            case None    => ZChannel.write(temp.result()) *> decodeChannel(newSpare)
+            case Some(e) => ZChannel.fail(EncodingException(s"Not a valid hex digit: '${e.toChar}'"))
+          }
         }
       }
-    }
-    def err(z: Nothing): ZChannel[Any, Nothing, Chunk[Byte], Any, HexDecodeException, Chunk[Byte], Unit] =
-      throw new UnsupportedOperationException("Input stream should be infallible")
-    def done(@unused u: Any): ZChannel[Any, Nothing, Chunk[Byte], Any, HexDecodeException, Chunk[Byte], Unit] = if (
-      spare.isEmpty
-    ) {
-      ZChannel.succeed(())
-    } else {
-      ZChannel.fail(HexDecodeException.IncompleteByteException)
+      def err(z: Nothing): ZChannel[Any, Nothing, Chunk[Byte], Any, EncodingException, Chunk[Byte], Unit] =
+        throw new UnsupportedOperationException("Input stream should be infallible")
+
+      def done(@unused u: Any): ZChannel[Any, Nothing, Chunk[Byte], Any, EncodingException, Chunk[Byte], Unit] =
+        if (spare.isEmpty) {
+          ZChannel.succeed(())
+        } else {
+          ZChannel.fail(EncodingException("Extra input at end after last fully encoded byte"))
+        }
+
+      ZChannel.readWith[Any, Nothing, zio.Chunk[Byte], Any, EncodingException, zio.Chunk[Byte], Unit](
+        in,
+        err,
+        done
+      )
     }
 
-    ZChannel.readWith[Any, Nothing, zio.Chunk[Byte], Any, HexDecodeException, zio.Chunk[Byte], Unit](
-      in,
-      err,
-      done
+    ZPipeline.fromChannel(decodeChannel(Chunk.empty[Byte]))
+  }
+
+  /**
+   * Encode each input byte as two output bytes as the hex representation of the
+   * input byte.
+   */
+  def hexEncode: ZPipeline[Any, Nothing, Byte, Byte] = {
+    val DIGITS: Array[Byte] = Array(
+      '0'.toByte,
+      '1'.toByte,
+      '2'.toByte,
+      '3'.toByte,
+      '4'.toByte,
+      '5'.toByte,
+      '6'.toByte,
+      '7'.toByte,
+      '8'.toByte,
+      '9'.toByte,
+      'a'.toByte,
+      'b'.toByte,
+      'c'.toByte,
+      'd'.toByte,
+      'e'.toByte,
+      'f'.toByte
+    )
+    ZPipeline.fromPush[Any, Nothing, Byte, Byte](
+      ZIO.succeed((inChunkOpt: Option[Chunk[Byte]]) =>
+        inChunkOpt match {
+          case None => ZIO.succeed(Chunk.empty[Byte])
+          case Some(bs) =>
+            ZIO.succeed {
+              val out = ChunkBuilder.make[Byte](bs.size * 2)
+              for (b <- bs) {
+                out += DIGITS((b >>> 4) & 0x0f)
+                out += DIGITS((b >>> 0) & 0x0f)
+              }
+              out.result()
+            }
+        }
+      )
     )
   }
-
-  def decode: ZPipeline[Any, HexDecodeException, Byte, Byte] = ZPipeline.fromChannel(decodeChannel)
-
-  def encodeChunk(in: Chunk[Byte]): Chunk[Byte] = {
-    val out = ChunkBuilder.make[Byte](in.size * 2)
-    for (b <- in) {
-      out += DIGITS((b >>> 4) & 0x0f)
-      out += DIGITS((b >>> 0) & 0x0f)
-    }
-    out.result()
-  }
-
-  def encodeChunkOpt(inChunkOpt: Option[Chunk[Byte]]): Chunk[Byte] = inChunkOpt match {
-    case None     => Chunk.empty[Byte]
-    case Some(bs) => encodeChunk(bs)
-  }
-
-  def encodeChunkOptZIO(inChunkOpt: Option[Chunk[Byte]]): ZIO[Any, Nothing, Chunk[Byte]] =
-    ZIO.succeed(encodeChunkOpt(inChunkOpt))
-
-  def encode: ZPipeline[Any, Nothing, Byte, Byte] =
-    ZPipeline.fromPush[Any, Nothing, Byte, Byte](ZIO.succeed(encodeChunkOptZIO))
 
 }

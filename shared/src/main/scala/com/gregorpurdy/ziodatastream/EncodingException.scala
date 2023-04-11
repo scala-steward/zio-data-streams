@@ -16,13 +16,11 @@
 
 package com.gregorpurdy.ziodatastream
 
-sealed trait HexDecodeException extends Exception
+/** Signals that exception occurred in encoding/decoding */
+case class EncodingException private (message: String, cause: Exception) extends Exception(message, cause)
 
-object HexDecodeException {
-  case class InvalidHexCharException(c: Char) extends HexDecodeException
+object EncodingException {
+  def apply(message: String, cause: Option[Exception] = None) = new EncodingException(message, cause.getOrElse(null))
 
-  /**
-   * Incomplete byte at end of input
-   */
-  case object IncompleteByteException extends HexDecodeException
+  def apply(cause: Exception) = new EncodingException(cause.getMessage(), cause)
 }
