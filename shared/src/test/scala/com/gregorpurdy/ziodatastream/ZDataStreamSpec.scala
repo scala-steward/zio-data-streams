@@ -17,7 +17,7 @@
 package com.gregorpurdy.ziodatastream
 
 import zio._
-import zio.stream.{ZSink, ZStream}
+import zio.stream.{ZPipeline, ZSink, ZStream}
 import zio.test._
 
 import java.io.DataInputStream
@@ -26,9 +26,9 @@ object ZDataStreamSpec extends ZIOSpecDefault {
 
   def doTest(stream: => ZStream[Any, Nothing, Byte], string: String): ZIO[Any, Nothing, TestResult] = for {
     value <- stream
-               .via(ZHexPipeline.hexEncode)
-               .run(ZSink.collectAll[Byte])
-               .map(bs => new String(bs.toArray))
+               .via(ZPipeline.hexEncode)
+               .run(ZSink.collectAll[Char])
+               .map(cs => new String(cs.toArray))
   } yield assertTrue(value == string)
 
   private def checkVsDIS[A](gen: Gen[Any, A], g: A => ZStream[Any, Throwable, Byte], f: DataInputStream => A) =

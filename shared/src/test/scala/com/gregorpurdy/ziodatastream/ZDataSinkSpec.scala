@@ -17,7 +17,7 @@
 package com.gregorpurdy.ziodatastream
 
 import zio._
-import zio.stream.{ZSink, ZStream}
+import zio.stream.{ZPipeline, ZSink, ZStream}
 import zio.test._
 import zio.test.Assertion._
 
@@ -89,37 +89,37 @@ object ZDataSinkSpec extends ZIOSpecDefault {
 
   def spec = suite("ZDataSinkSpec")(
     test("readInt works for 1") {
-      val stream = ZStream.fromIterable("00000001".getBytes).via(ZHexPipeline.hexDecode)
+      val stream = ZStream.fromIterable("00000001").via(ZPipeline.hexDecode)
       for {
         value <- stream.run(ZDataSink.readInt)
       } yield assertTrue(value == 1)
     },
     test("readLong works for 1") {
-      val stream = ZStream.fromIterable("0000000000000001".getBytes).via(ZHexPipeline.hexDecode)
+      val stream = ZStream.fromIterable("0000000000000001").via(ZPipeline.hexDecode)
       for {
         value <- stream.run(ZDataSink.readLong)
       } yield assertTrue(value == 1L)
     },
     test("readIntLength works for 1") {
-      val stream = ZStream.fromIterable("00000001".getBytes).via(ZHexPipeline.hexDecode)
+      val stream = ZStream.fromIterable("00000001").via(ZPipeline.hexDecode)
       for {
         value <- stream.run(ZDataSink.readIntLength)
       } yield assertTrue(value == 1)
     },
     test("readIntLength fails for -1") {
-      val stream = ZStream.fromIterable("ffffffff".getBytes).via(ZHexPipeline.hexDecode)
+      val stream = ZStream.fromIterable("ffffffff").via(ZPipeline.hexDecode)
       for {
         exit <- stream.run(ZDataSink.readIntLength).exit
       } yield assert(exit)(fails(equalTo(NegativeLengthException(-1))))
     },
     test("readChunk works for zero-length") {
-      val stream = ZStream.fromIterable("00000000".getBytes).via(ZHexPipeline.hexDecode)
+      val stream = ZStream.fromIterable("00000000").via(ZPipeline.hexDecode)
       for {
         value <- stream.run(ZDataSink.readIntLengthChunk)
       } yield assertTrue(value.isEmpty)
     },
     test("readChunk works for 5 specific Bytes") {
-      val stream   = ZStream.fromIterable("0000000500017f80ff".getBytes).via(ZHexPipeline.hexDecode)
+      val stream   = ZStream.fromIterable("0000000500017f80ff").via(ZPipeline.hexDecode)
       val expected = Chunk[Byte](0.toByte, 1.toByte, 127.toByte, -128.toByte, -1.toByte)
       for {
         value <- stream.run(ZDataSink.readIntLengthChunk)
@@ -134,7 +134,7 @@ object ZDataSinkSpec extends ZIOSpecDefault {
       )
     },
     test("readModifiedUTF8 works for Bytes DataOutputStream produces for \"馊\"") {
-      val stream   = ZStream.fromIterable("0003e9a68a".getBytes).via(ZHexPipeline.hexDecode)
+      val stream   = ZStream.fromIterable("0003e9a68a").via(ZPipeline.hexDecode)
       val expected = "馊"
       for {
         value <- stream.run(ZDataSink.readModifiedUTF8)
