@@ -3,7 +3,7 @@ import sbt.Keys.libraryDependencies
 
 lazy val scala3                 = "3.2.2"
 lazy val scala213               = "2.13.10"
-lazy val scala212               = "2.12.17"
+lazy val scala212               = "2.12.18"
 lazy val scala211               = "2.11.12"
 lazy val supportedScalaVersions = List(scala3)
 
