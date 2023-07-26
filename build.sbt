@@ -41,7 +41,7 @@ ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports"
 
 addCommandAlias(
   "check",
-  "; scalafmtSbtCheck; scalafmtCheckAll"
+  "; headerCheck; scalafmtSbtCheck; scalafmtCheckAll; scalafixAll --check; doc"
 )
 
 addCommandAlias(
