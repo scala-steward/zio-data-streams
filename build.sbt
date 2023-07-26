@@ -43,6 +43,12 @@ addCommandAlias(
   "check",
   "; scalafmtSbtCheck; scalafmtCheckAll"
 )
+
+addCommandAlias(
+  "generateReadme",
+  "; project docs; set mdocIn := file(\"docs/index.md\"); set mdocOut := file(\"README.md\"); doc / mdoc"
+)
+
 addCommandAlias(
   "testJVM3",
   ";test"
@@ -61,6 +67,16 @@ lazy val root = project
     publish / skip     := true,
     publishLocal       := {}
   )
+
+lazy val docs = project
+  .in(file("docs-build"))
+  .settings(
+    mdocVariables := Map(
+      "VERSION" -> version.value.replaceAll("-SNAPSHOT$", "")
+    )
+  )
+  .dependsOn(zioDataStreams.jvm)
+  .enablePlugins(MdocPlugin)
 
 lazy val zioDataStreams = crossProject(JSPlatform, JVMPlatform)
   .in(file("."))
