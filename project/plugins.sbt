@@ -1,7 +1,7 @@
 addSbtPlugin("org.scalameta"      % "sbt-scalafmt"             % "2.4.6")
 addSbtPlugin("de.heikoseeberger"  % "sbt-header"               % "5.10.0")
 addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "1.12.0")
-addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.0.0")
+addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.3.2")
 addSbtPlugin("ch.epfl.scala"      % "sbt-scalafix"             % "0.10.4")
 addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"             % "3.9.21")
 addSbtPlugin("com.github.sbt"     % "sbt-pgp"                  % "2.1.2")
