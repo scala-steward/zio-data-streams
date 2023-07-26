@@ -16,13 +16,13 @@
 
 package com.gregorpurdy.ziodatastream
 
-import zio._
-import zio.stream.{ZPipeline, ZSink, ZStream}
-import zio.test._
-import zio.test.Assertion._
-
 import java.io._
 import java.nio.charset.StandardCharsets
+
+import zio._
+import zio.stream.{ZPipeline, ZSink, ZStream}
+import zio.test.Assertion._
+import zio.test._
 
 object ZDataSinkSpec extends ZIOSpecDefault {
 

@@ -16,9 +16,9 @@
 
 package com.gregorpurdy.ziodatastream
 
-import zio.test._
-
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, DataInputStream, DataOutputStream}
+
+import zio.test._
 
 object JavaDataIOSpec extends ZIOSpecDefault {
 

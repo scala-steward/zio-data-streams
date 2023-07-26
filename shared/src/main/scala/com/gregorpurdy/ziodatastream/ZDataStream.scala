@@ -16,10 +16,10 @@
 
 package com.gregorpurdy.ziodatastream
 
+import java.io.UTFDataFormatException
+
 import zio.ChunkBuilder
 import zio.stream.ZStream
-
-import java.io.UTFDataFormatException
 
 /**
  * Streams to interoperate with JDK's [[java.io.DataInput]] and

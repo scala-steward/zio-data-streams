@@ -16,11 +16,11 @@
 
 package com.gregorpurdy.ziodatastream
 
+import java.io.DataInputStream
+
 import zio._
 import zio.stream.{ZPipeline, ZSink, ZStream}
 import zio.test._
-
-import java.io.DataInputStream
 
 object ZDataStreamSpec extends ZIOSpecDefault {
 
