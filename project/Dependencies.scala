@@ -1,7 +1,7 @@
 import sbt._
 
 object Dependencies {
-  lazy val zioVersion = "2.0.17"
+  lazy val zioVersion = "2.0.18"
 
   // lazy val zioStreams = "dev.zio" %%% "zio-streams"  % zioVersion
   // lazy val zioTest    = "dev.zio" %%% "zio-test"     % zioVersion
